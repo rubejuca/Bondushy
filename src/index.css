@@ -1,0 +1,487 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Soft professional pink palette */
+    --background: 340 35% 97%;
+    --foreground: 340 25% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 340 25% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 340 25% 20%;
+
+    /* Primary: Soft professional pink */
+    --primary: 340 50% 80%;
+    --primary-foreground: 340 25% 20%;
+
+    /* Secondary: Light rose */
+    --secondary: 340 40% 85%;
+    --secondary-foreground: 340 25% 20%;
+
+    /* Muted: Very light pink */
+    --muted: 340 25% 95%;
+    --muted-foreground: 340 15% 45%;
+
+    /* Accent: Warm blush */
+    --accent: 350 45% 90%;
+    --accent-foreground: 340 25% 25%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 340 20% 88%;
+    --input: 340 20% 88%;
+    --ring: 340 50% 80%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 340 30% 98%;
+    --sidebar-foreground: 340 25% 20%;
+    --sidebar-primary: 340 50% 80%;
+    --sidebar-primary-foreground: 340 25% 20%;
+    --sidebar-accent: 340 35% 92%;
+    --sidebar-accent-foreground: 340 25% 25%;
+    --sidebar-border: 340 20% 88%;
+    --sidebar-ring: 340 50% 80%;
+
+    /* Custom gradients */
+    --gradient-spa: linear-gradient(135deg, hsl(340 50% 85%) 0%, hsl(350 45% 90%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(340 40% 90%) 0%, hsl(350 35% 95%) 100%);
+    
+    /* Font families */
+    --font-primary: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-heading: 'Playfair Display', serif;
+    --font-accent: 'Raleway', sans-serif;
+  }
+
+  .dark {
+    --background: 340 25% 12%;
+    --foreground: 340 20% 95%;
+
+    --card: 340 20% 15%;
+    --card-foreground: 340 20% 95%;
+
+    --popover: 340 20% 15%;
+    --popover-foreground: 340 20% 95%;
+
+    --primary: 340 50% 75%;
+    --primary-foreground: 340 25% 15%;
+
+    --secondary: 340 30% 30%;
+    --secondary-foreground: 340 20% 95%;
+
+    --muted: 340 20% 20%;
+    --muted-foreground: 340 15% 65%;
+
+    --accent: 340 30% 25%;
+    --accent-foreground: 340 20% 90%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 340 20% 25%;
+    --input: 340 20% 25%;
+    --ring: 340 50% 75%;
+
+    --sidebar-background: 340 25% 10%;
+    --sidebar-foreground: 340 20% 90%;
+    --sidebar-primary: 340 50% 75%;
+    --sidebar-primary-foreground: 340 25% 15%;
+    --sidebar-accent: 340 25% 20%;
+    --sidebar-accent-foreground: 340 20% 85%;
+    --sidebar-border: 340 20% 20%;
+    --sidebar-ring: 340 50% 75%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-primary);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+  
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+}
+
+/* Animaciones personalizadas */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+@keyframes text-pop-up {
+  0% {
+    transform: translateY(0);
+    text-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  100% {
+    transform: translateY(-10px);
+    text-shadow: 0 10px 10px rgba(0,0,0,0.2);
+  }
+}
+
+@keyframes letter-spacing-expand {
+  0% {
+    letter-spacing: 0px;
+  }
+  100% {
+    letter-spacing: 1px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  from,
+  20%,
+  40%,
+  60%,
+  80%,
+  to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes kenBurns {
+  0% {
+    transform: scale(1) translate(0, 0);
+    transform-origin: 10% 10%;
+  }
+  100% {
+    transform: scale(1.2) translate(2%, 2%);
+    transform-origin: 10% 10%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #ffffff20, #ffffff40, #ffffff20);
+  background-size: 1000px 100%;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-text-pop {
+  animation: text-pop-up 0.5s ease forwards;
+}
+
+.animate-letter-spacing {
+  animation: letter-spacing-expand 0.8s ease forwards;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+.zoom-in {
+  animation: zoomIn 0.5s ease-out forwards;
+}
+
+.bounce-in {
+  animation: bounceIn 0.75s both;
+}
+
+.ken-burns {
+  animation: kenBurns 10s ease-in-out infinite alternate;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+/* Efectos especiales para el título principal */
+.hero-title {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, hsl(340 50% 80%), hsl(350 45% 90%), hsl(340 50% 80%));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-x 3s ease infinite;
+  transition: all 0.3s ease;
+}
+
+.hero-title:hover {
+  transform: scale(1.02);
+  text-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+}
+
+.hero-subtitle {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-subtitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, hsl(340 50% 80%), hsl(350 45% 90%));
+  transition: width 1s ease;
+}
+
+.hero-subtitle:hover::after {
+  width: 100%;
+}
+
+/* Efectos para el carrusel de procedimientos */
+.carousel-image {
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carousel-image.fade-enter {
+  opacity: 0;
+  transform: scale(0.95) translateX(20px);
+}
+
+.carousel-image.fade-enter-active {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  transition: opacity 800ms, transform 800ms;
+}
+
+.carousel-image.fade-exit {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}
+
+.carousel-image.fade-exit-active {
+  opacity: 0;
+  transform: scale(0.95) translateX(-20px);
+  transition: opacity 800ms, transform 800ms;
+}
+
+/* Efectos para las tarjetas de información */
+.info-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Efectos para los botones */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-animated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-animated:hover::before {
+  left: 100%;
+}
+
+.btn-animated:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos de scroll para secciones */
+.scroll-fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-slide-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-slide-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}

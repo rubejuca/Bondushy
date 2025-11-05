@@ -1,0 +1,212 @@
+import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+interface Procedure {
+  id: string;
+  name: string;
+  description: string | null;
+  duration_minutes: number;
+  price: number | null;
+}
+
+interface AppointmentCalendarProps {
+  isAdmin?: boolean;
+}
+
+export const AppointmentCalendar = ({ isAdmin = false }: AppointmentCalendarProps) => {
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [procedures, setProcedures] = useState<Procedure[]>([]);
+  const [selectedProcedure, setSelectedProcedure] = useState<string>("");
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+
+  const timeSlots = [
+    "09:00", "10:00", "11:00", "12:00",
+    "14:00", "15:00", "16:00", "17:00", "18:00"
+  ];
+
+  useEffect(() => {
+    fetchProcedures();
+  }, []);
+
+  useEffect(() => {
+    if (date) {
+      fetchBookedSlots();
+    }
+  }, [date]);
+
+  const fetchProcedures = async () => {
+    const { data } = await supabase
+      .from("procedures")
+      .select("*")
+      .eq("is_active", true)
+      .order("name");
+
+    if (data) setProcedures(data);
+  };
+
+  const fetchBookedSlots = async () => {
+    if (!date) return;
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const { data } = await supabase
+      .from("appointments")
+      .select("appointment_date")
+      .gte("appointment_date", startOfDay.toISOString())
+      .lte("appointment_date", endOfDay.toISOString())
+      .in("status", ["pending", "confirmed"]);
+
+    if (data) {
+      const slots = data.map(apt => {
+        const date = new Date(apt.appointment_date);
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+      });
+      setBookedSlots(slots);
+    }
+  };
+
+  const handleBookAppointment = async () => {
+    if (!date || !selectedTime || !selectedProcedure) {
+      toast.error("Por favor completa todos los campos");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Debes iniciar sesión");
+        return;
+      }
+
+      const [hours, minutes] = selectedTime.split(":");
+      const appointmentDate = new Date(date);
+      appointmentDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+      const { error } = await supabase
+        .from("appointments")
+        .insert({
+          patient_id: user.id,
+          procedure_id: selectedProcedure,
+          appointment_date: appointmentDate.toISOString(),
+          notes: notes || null,
+          status: "pending"
+        });
+
+      if (error) throw error;
+
+      toast.success("¡Cita agendada exitosamente!");
+      setSelectedTime("");
+      setSelectedProcedure("");
+      setNotes("");
+      fetchBookedSlots();
+    } catch (error: any) {
+      toast.error(error.message || "Error al agendar la cita");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Selecciona una Fecha</CardTitle>
+          <CardDescription>Elige el día para tu cita</CardDescription>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            disabled={(date) => date < new Date()}
+            locale={es}
+            className="rounded-md border"
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Detalles de la Cita</CardTitle>
+          <CardDescription>
+            {date ? format(date, "PPPP", { locale: es }) : "Selecciona una fecha"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Procedimiento</Label>
+            <Select value={selectedProcedure} onValueChange={setSelectedProcedure}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona un procedimiento" />
+              </SelectTrigger>
+              <SelectContent>
+                {procedures.map((proc) => (
+                  <SelectItem key={proc.id} value={proc.id}>
+                    {proc.name} - ${proc.price} ({proc.duration_minutes} min)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Horario</Label>
+            <Select value={selectedTime} onValueChange={setSelectedTime} disabled={!date}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona una hora" />
+              </SelectTrigger>
+              <SelectContent>
+                {timeSlots.map((time) => (
+                  <SelectItem 
+                    key={time} 
+                    value={time}
+                    disabled={bookedSlots.includes(time)}
+                  >
+                    {time} {bookedSlots.includes(time) ? "(Ocupado)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Notas adicionales (opcional)</Label>
+            <Textarea
+              placeholder="Alergias, preferencias, etc."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+            />
+          </div>
+
+          <Button 
+            onClick={handleBookAppointment} 
+            disabled={loading || !date || !selectedTime || !selectedProcedure}
+            className="w-full"
+          >
+            {loading ? "Agendando..." : "Agendar Cita"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
