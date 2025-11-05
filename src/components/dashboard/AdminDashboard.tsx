@@ -3,15 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { LogOut, Calendar, Users, MessageSquare } from "lucide-react";
+import { LogOut, Calendar, Users, MessageSquare, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppointmentCalendar } from "@/components/appointments/AppointmentCalendar";
 import { AppointmentsList } from "@/components/appointments/AppointmentsList";
 import { ChatAssistant } from "@/components/chat/ChatAssistant";
+import { StatisticsDashboard } from "@/components/dashboard/StatisticsDashboard";
+import "./admin-dashboard.css";
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"calendar" | "list" | "chat">("calendar");
+  const [activeTab, setActiveTab] = useState<"calendar" | "list" | "chat" | "stats">("stats");
   const [stats, setStats] = useState({ total: 0, pending: 0, confirmed: 0 });
 
   useEffect(() => {
@@ -49,11 +51,11 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+    <div className="admin-dashboard-container">
+      <header className="admin-header">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-foreground">Panel Administrativo - BondusySpa</h1>
-          <Button variant="outline" onClick={handleLogout}>
+          <h1 className="text-2xl font-semibold">Panel Administrativo - BondusySpa</h1>
+          <Button variant="outline" onClick={handleLogout} className="btn-animated">
             <LogOut className="mr-2 h-4 w-4" />
             Cerrar Sesión
           </Button>
@@ -61,65 +63,74 @@ export const AdminDashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Citas</CardTitle>
+        <div className="stats-grid">
+          <Card className="stat-card">
+            <CardHeader className="stat-card-content pb-3">
+              <CardTitle className="stat-title">Total Citas</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-primary">{stats.total}</div>
+              <div className="stat-value">{stats.total}</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Pendientes</CardTitle>
+          <Card className="stat-card">
+            <CardHeader className="stat-card-content pb-3">
+              <CardTitle className="stat-title">Pendientes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-secondary">{stats.pending}</div>
+              <div className="stat-value">{stats.pending}</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Confirmadas</CardTitle>
+          <Card className="stat-card">
+            <CardHeader className="stat-card-content pb-3">
+              <CardTitle className="stat-title">Confirmadas</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-accent-foreground">{stats.confirmed}</div>
+              <div className="stat-value">{stats.confirmed}</div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="mb-6">
-          <div className="flex gap-2 border-b">
-            <Button
-              variant={activeTab === "calendar" ? "default" : "ghost"}
-              onClick={() => setActiveTab("calendar")}
-              className="rounded-b-none"
-            >
-              <Calendar className="mr-2 h-4 w-4" />
-              Calendario
-            </Button>
-            <Button
-              variant={activeTab === "list" ? "default" : "ghost"}
-              onClick={() => setActiveTab("list")}
-              className="rounded-b-none"
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Lista de Citas
-            </Button>
-            <Button
-              variant={activeTab === "chat" ? "default" : "ghost"}
-              onClick={() => setActiveTab("chat")}
-              className="rounded-b-none"
-            >
-              <MessageSquare className="mr-2 h-4 w-4" />
-              Asistente
-            </Button>
-          </div>
+        <div className="tab-navigation">
+          <Button
+            variant={activeTab === "stats" ? "default" : "ghost"}
+            onClick={() => setActiveTab("stats")}
+            className={`tab-button ${activeTab === "stats" ? "active" : ""}`}
+          >
+            <BarChart3 className="tab-icon h-4 w-4" />
+            Estadísticas
+          </Button>
+          <Button
+            variant={activeTab === "calendar" ? "default" : "ghost"}
+            onClick={() => setActiveTab("calendar")}
+            className={`tab-button ${activeTab === "calendar" ? "active" : ""}`}
+          >
+            <Calendar className="tab-icon h-4 w-4" />
+            Calendario
+          </Button>
+          <Button
+            variant={activeTab === "list" ? "default" : "ghost"}
+            onClick={() => setActiveTab("list")}
+            className={`tab-button ${activeTab === "list" ? "active" : ""}`}
+          >
+            <Users className="tab-icon h-4 w-4" />
+            Lista de Citas
+          </Button>
+          <Button
+            variant={activeTab === "chat" ? "default" : "ghost"}
+            onClick={() => setActiveTab("chat")}
+            className={`tab-button ${activeTab === "chat" ? "active" : ""}`}
+          >
+            <MessageSquare className="tab-icon h-4 w-4" />
+            Asistente
+          </Button>
         </div>
 
-        {activeTab === "calendar" && <AppointmentCalendar isAdmin />}
-        {activeTab === "list" && <AppointmentsList isAdmin onUpdate={fetchStats} />}
-        {activeTab === "chat" && <ChatAssistant />}
+        <div className="content-section">
+          {activeTab === "stats" && <StatisticsDashboard />}
+          {activeTab === "calendar" && <AppointmentCalendar isAdmin />}
+          {activeTab === "list" && <AppointmentsList isAdmin onUpdate={fetchStats} />}
+          {activeTab === "chat" && <ChatAssistant />}
+        </div>
       </main>
     </div>
   );

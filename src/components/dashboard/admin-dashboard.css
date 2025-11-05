@@ -1,0 +1,666 @@
+/* Estilos específicos para el Panel Administrativo - BondusySpa */
+
+.admin-dashboard-container {
+  background: linear-gradient(135deg, hsl(340 35% 97%) 0%, hsl(350 35% 95%) 100%);
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.admin-header {
+  background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(340 30% 98%) 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid hsl(340 20% 88%);
+  animation: slideInDown 0.6s ease-out;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-header h1 {
+  background: linear-gradient(90deg, hsl(340 50% 70%), hsl(350 45% 80%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
+}
+
+.admin-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(340 50% 80%), hsl(350 45% 90%));
+  border-radius: 2px;
+  animation: expandLine 1.2s ease-out forwards;
+}
+
+@keyframes expandLine {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 60px;
+    opacity: 1;
+  }
+}
+
+/* Estadísticas Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(340 40% 98%) 100%);
+  border: 1px solid hsl(340 20% 88%);
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s;
+  z-index: 1;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card:hover::before {
+  left: 100%;
+}
+
+.stat-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.stat-value {
+  font-weight: 800;
+  font-size: 2.5rem;
+  line-height: 1;
+  background: linear-gradient(135deg, hsl(340 50% 70%), hsl(350 45% 80%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-value {
+  transform: scale(1.05);
+}
+
+.stat-title {
+  font-weight: 500;
+  color: hsl(340 15% 45%);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid hsl(340 25% 95%);
+  margin-bottom: 1.5rem;
+  position: relative;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.tab-button {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+  font-weight: 500;
+  color: hsl(340 15% 45%);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-button:hover {
+  color: hsl(340 50% 70%);
+  background: hsl(340 25% 95%);
+}
+
+.tab-button.active {
+  color: hsl(340 50% 70%);
+  background: hsl(0 0% 100%);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(340 50% 80%), hsl(350 45% 90%));
+  border-radius: 2px 2px 0 0;
+  animation: expandWidth 0.4s ease-out;
+}
+
+@keyframes expandWidth {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.tab-icon {
+  transition: transform 0.3s ease;
+}
+
+.tab-button:hover .tab-icon {
+  transform: translateY(-2px);
+}
+
+/* Content Sections */
+.content-section {
+  animation: fadeIn 0.6s ease-out;
+  background: hsl(0 0% 100%);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid hsl(340 20% 88%);
+  overflow: hidden;
+}
+
+.section-header {
+  background: linear-gradient(135deg, hsl(340 40% 98%) 0%, hsl(350 35% 95%) 100%);
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(340 20% 88%);
+}
+
+.section-title {
+  font-weight: 600;
+  color: hsl(340 25% 20%);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-description {
+  color: hsl(340 15% 45%);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Calendar Styles */
+.calendar-container {
+  padding: 1.5rem;
+}
+
+.calendar-wrapper {
+  border: 1px solid hsl(340 20% 88%);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: hsl(0 0% 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.calendar-wrapper:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Appointment List Styles */
+.appointment-list-container {
+  padding: 1.5rem;
+}
+
+.appointment-card {
+  background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(340 40% 99%) 100%);
+  border: 1px solid hsl(340 20% 88%);
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.appointment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-color: hsl(340 20% 80%);
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem 1.25rem 0.75rem;
+  border-bottom: 1px dashed hsl(340 20% 90%);
+}
+
+.appointment-title {
+  font-weight: 600;
+  color: hsl(340 25% 20%);
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.user-info {
+  font-size: 0.85rem;
+  color: hsl(340 15% 45%);
+  margin-top: 0.25rem;
+}
+
+.user-name {
+  font-weight: 500;
+  color: hsl(340 25% 25%);
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: hsl(340 15% 50%);
+}
+
+.badge-status {
+  animation: bounceIn 0.5s ease-out;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+}
+
+.appointment-content {
+  padding: 1rem 1.25rem;
+}
+
+.appointment-detail {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: hsl(340 15% 45%);
+}
+
+.detail-icon {
+  margin-right: 0.75rem;
+  color: hsl(340 20% 60%);
+  flex-shrink: 0;
+}
+
+.detail-text {
+  line-height: 1.4;
+}
+
+.notes-section {
+  background: hsl(340 25% 97%);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px dashed hsl(340 20% 90%);
+  flex-wrap: wrap;
+}
+
+.action-button {
+  transition: all 0.2s ease;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-button {
+  background: linear-gradient(135deg, hsl(120 60% 40%), hsl(120 50% 35%));
+  color: white;
+  border: none;
+}
+
+.cancel-button {
+  background: linear-gradient(135deg, hsl(0 70% 55%), hsl(0 60% 50%));
+  color: white;
+  border: none;
+}
+
+.complete-button {
+  background: linear-gradient(135deg, hsl(200 80% 45%), hsl(200 70% 40%));
+  color: white;
+  border: none;
+}
+
+/* Chat Assistant Styles */
+.chat-container {
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.message-bubble {
+  max-width: 80%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease-out;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.message-user {
+  background: linear-gradient(135deg, hsl(340 50% 80%), hsl(340 40% 75%));
+  color: hsl(340 25% 20%);
+  margin-left: auto;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.message-assistant {
+  background: hsl(340 25% 95%);
+  color: hsl(340 25% 25%);
+  margin-right: auto;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.message-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.avatar-user {
+  background: hsl(340 30% 85%);
+}
+
+.avatar-assistant {
+  background: hsl(340 40% 80%);
+}
+
+.chat-input-area {
+  padding: 1rem;
+  border-top: 1px solid hsl(340 20% 88%);
+  background: hsl(0 0% 100%);
+}
+
+.input-container {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.chat-input {
+  flex: 1;
+  border: 1px solid hsl(340 20% 88%);
+  border-radius: 2rem;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: hsl(340 50% 80%);
+  box-shadow: 0 0 0 3px hsl(340 50% 80% / 20%);
+}
+
+.send-button {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, hsl(340 50% 80%), hsl(340 40% 75%));
+  color: hsl(340 25% 20%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.send-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.thinking-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: hsl(340 25% 95%);
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  width: fit-content;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.thinking-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: hsl(340 50% 70%);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.thinking-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Filter Section */
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 1rem 0;
+  animation: fadeIn 0.6s ease-out 0.3s both;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(340 15% 45%);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.filter-button {
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+}
+
+.filter-button:hover {
+  transform: translateY(-2px);
+}
+
+.filter-button.active {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: hsl(340 15% 45%);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: hsl(340 20% 70%);
+}
+
+/* Animaciones Generales */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounceIn {
+  from,
+  20%,
+  40%,
+  60%,
+  80%,
+  to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 1rem;
+  }
+  
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .tab-navigation {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .tab-button {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+  }
+  
+  .appointment-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .message-bubble {
+    max-width: 90%;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-button {
+    width: 100%;
+  }
+}

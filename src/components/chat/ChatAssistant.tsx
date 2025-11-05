@@ -53,7 +53,7 @@ export const ChatAssistant = () => {
         content: data.response
       };
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al procesar tu mensaje");
       console.error(error);
     } finally {

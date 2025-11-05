@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Calendar as CalendarIcon, Clock, Scissors, FileText } from "lucide-react";
 
 interface Procedure {
   id: string;
@@ -118,95 +119,112 @@ export const AppointmentCalendar = ({ isAdmin = false }: AppointmentCalendarProp
       setSelectedProcedure("");
       setNotes("");
       fetchBookedSlots();
-    } catch (error: any) {
-      toast.error(error.message || "Error al agendar la cita");
+    } catch (error) {
+      toast.error((error as Error).message || "Error al agendar la cita");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Selecciona una Fecha</CardTitle>
-          <CardDescription>Elige el día para tu cita</CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            disabled={(date) => date < new Date()}
-            locale={es}
-            className="rounded-md border"
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Detalles de la Cita</CardTitle>
-          <CardDescription>
-            {date ? format(date, "PPPP", { locale: es }) : "Selecciona una fecha"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Procedimiento</Label>
-            <Select value={selectedProcedure} onValueChange={setSelectedProcedure}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona un procedimiento" />
-              </SelectTrigger>
-              <SelectContent>
-                {procedures.map((proc) => (
-                  <SelectItem key={proc.id} value={proc.id}>
-                    {proc.name} - ${proc.price} ({proc.duration_minutes} min)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Horario</Label>
-            <Select value={selectedTime} onValueChange={setSelectedTime} disabled={!date}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona una hora" />
-              </SelectTrigger>
-              <SelectContent>
-                {timeSlots.map((time) => (
-                  <SelectItem 
-                    key={time} 
-                    value={time}
-                    disabled={bookedSlots.includes(time)}
-                  >
-                    {time} {bookedSlots.includes(time) ? "(Ocupado)" : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Notas adicionales (opcional)</Label>
-            <Textarea
-              placeholder="Alergias, preferencias, etc."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
+    <div className="p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+              Selecciona una Fecha
+            </CardTitle>
+            <CardDescription>Elige el día para tu cita</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              disabled={(date) => date < new Date()}
+              locale={es}
+              className="rounded-md border"
             />
-          </div>
+          </CardContent>
+        </Card>
 
-          <Button 
-            onClick={handleBookAppointment} 
-            disabled={loading || !date || !selectedTime || !selectedProcedure}
-            className="w-full"
-          >
-            {loading ? "Agendando..." : "Agendar Cita"}
-          </Button>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Scissors className="h-5 w-5 text-primary" />
+              Detalles de la Cita
+            </CardTitle>
+            <CardDescription>
+              {date ? format(date, "PPPP", { locale: es }) : "Selecciona una fecha"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Scissors className="h-4 w-4" />
+                Procedimiento
+              </Label>
+              <Select value={selectedProcedure} onValueChange={setSelectedProcedure}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un procedimiento" />
+                </SelectTrigger>
+                <SelectContent>
+                  {procedures.map((proc) => (
+                    <SelectItem key={proc.id} value={proc.id}>
+                      {proc.name} - ${proc.price} ({proc.duration_minutes} min)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Horario
+              </Label>
+              <Select value={selectedTime} onValueChange={setSelectedTime} disabled={!date}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una hora" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((time) => (
+                    <SelectItem 
+                      key={time} 
+                      value={time}
+                      disabled={bookedSlots.includes(time)}
+                    >
+                      {time} {bookedSlots.includes(time) ? "(Ocupado)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Notas adicionales (opcional)
+              </Label>
+              <Textarea
+                placeholder="Alergias, preferencias, etc."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <Button 
+              onClick={handleBookAppointment} 
+              disabled={loading || !date || !selectedTime || !selectedProcedure}
+              className="w-full"
+            >
+              {loading ? "Agendando..." : "Agendar Cita"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

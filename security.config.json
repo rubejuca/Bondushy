@@ -1,0 +1,128 @@
+{
+  "name": "BondushySpa Security Configuration",
+  "version": "1.0.0",
+  "description": "Security configuration for BondushySpa application",
+  "security": {
+    "authentication": {
+      "session": {
+        "secure": true,
+        "httpOnly": true,
+        "sameSite": "strict",
+        "maxAge": 3600000
+      },
+      "password": {
+        "minLength": 8,
+        "requireUppercase": true,
+        "requireLowercase": true,
+        "requireNumbers": true,
+        "requireSpecialChars": true
+      }
+    },
+    "api": {
+      "rateLimiting": {
+        "windowMs": 900000,
+        "max": 100
+      },
+      "cors": {
+        "origin": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allowedHeaders": [
+          "Content-Type",
+          "Authorization",
+          "X-Client-Info",
+          "apikey"
+        ],
+        "credentials": true
+      }
+    },
+    "database": {
+      "rowLevelSecurity": true,
+      "policies": {
+        "profiles": {
+          "select": "authenticated",
+          "insert": "authenticated",
+          "update": "authenticated"
+        },
+        "procedures": {
+          "select": "authenticated",
+          "insert": "admin",
+          "update": "admin"
+        },
+        "appointments": {
+          "select": "authenticated",
+          "insert": "authenticated",
+          "update": "authenticated",
+          "delete": "admin"
+        },
+        "user_roles": {
+          "select": "authenticated",
+          "insert": "admin",
+          "update": "admin",
+          "delete": "admin"
+        }
+      }
+    },
+    "storage": {
+      "buckets": {
+        "procedures": {
+          "public": true,
+          "allowedMimeTypes": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+          ],
+          "fileSizeLimit": 5242880
+        }
+      }
+    },
+    "functions": {
+      "spa-chat": {
+        "verifyJWT": true,
+        "allowedRoles": ["authenticated"]
+      }
+    },
+    "headers": {
+      "contentSecurityPolicy": {
+        "defaultSrc": ["'self'"],
+        "scriptSrc": ["'self'", "'unsafe-inline'", "https://*.supabase.co"],
+        "styleSrc": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com"
+        ],
+        "imgSrc": ["'self'", "data:", "https://*.supabase.co"],
+        "connectSrc": [
+          "'self'",
+          "https://*.supabase.co",
+          "https://ai.gateway.lovable.dev"
+        ],
+        "fontSrc": ["'self'", "https://fonts.gstatic.com"],
+        "objectSrc": ["'none'"],
+        "mediaSrc": ["'self'", "https://*.supabase.co"],
+        "frameSrc": ["'none'"],
+        "childSrc": ["'none'"],
+        "formAction": ["'self'"],
+        "baseUri": ["'self'"],
+        "upgradeInsecureRequests": true
+      },
+      "referrerPolicy": "no-referrer",
+      "xContentTypeOptions": "nosniff",
+      "xFrameOptions": "DENY",
+      "xXssProtection": "1; mode=block",
+      "strictTransportSecurity": "max-age=31536000; includeSubDomains"
+    }
+  },
+  "audit": {
+    "logFailedAttempts": true,
+    "logSuccessfulLogins": false,
+    "retentionDays": 30
+  },
+  "compliance": {
+    "gdpr": {
+      "dataEncryption": true,
+      "userConsent": true,
+      "rightToErasure": true
+    }
+  }
+}

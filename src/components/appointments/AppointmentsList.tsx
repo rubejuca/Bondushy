@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar, Clock, User, FileText, Filter } from "lucide-react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import "../dashboard/admin-dashboard.css";
 
 interface Procedure {
   name: string;
@@ -218,7 +219,7 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
       cancelled: "Cancelada"
     };
 
-    return <Badge variant={variants[status]}>{labels[status]}</Badge>;
+    return <Badge variant={variants[status]} className="badge-status">{labels[status]}</Badge>;
   };
 
   if (loading) {
@@ -229,19 +230,19 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
   const showFilters = isAdmin;
 
   return (
-    <div className="space-y-4">
+    <div className="appointment-list-container">
       {/* Filtros - solo para administradores */}
       {showFilters && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Filtrar por estado:</span>
+        <div className="filter-section">
+          <Filter className="filter-label h-4 w-4 text-muted-foreground" />
+          <span className="filter-label">Filtrar por estado:</span>
           {statusOptions.map((option) => (
             <Button
               key={option.value}
               variant={filter === option.value ? "default" : "outline"}
               size="sm"
               onClick={() => setFilter(option.value)}
-              className="text-xs"
+              className={`filter-button ${filter === option.value ? "active" : ""}`}
             >
               {option.label}
             </Button>
@@ -250,8 +251,11 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
       )}
 
       {appointments.length === 0 ? (
-        <Card>
+        <Card className="empty-state">
           <CardContent className="py-12 text-center text-muted-foreground">
+            <div className="empty-icon">
+              <Calendar className="h-12 w-12 mx-auto" />
+            </div>
             {isAdmin 
               ? `No hay citas ${filter !== "all" ? `con estado "${statusOptions.find(opt => opt.value === filter)?.label}"` : "programadas por los usuarios"}`
               : "No tienes citas programadas"
@@ -260,56 +264,55 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
         </Card>
       ) : (
         appointments.map((apt) => (
-          <Card key={apt.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <CardTitle className="text-lg">{apt.procedures?.name || 'Procedimiento no especificado'}</CardTitle>
-                  {isAdmin && (
-                    <div className="flex flex-col text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <User className="mr-1 h-3 w-3" />
-                        <span className="font-medium">Usuario:</span>
-                      </div>
-                      <div className="ml-4">
-                        <div>{apt.profiles?.full_name || 'Nombre no disponible'}</div>
-                        <div className="text-xs">{apt.profiles?.email || 'Email no disponible'}</div>
-                        {!apt.profiles && (
-                          <div className="text-xs text-yellow-600 mt-1">
-                            Nota: El perfil de este usuario puede estar incompleto
-                          </div>
-                        )}
-                      </div>
+          <Card key={apt.id} className="appointment-card">
+            <CardHeader className="appointment-header">
+              <div className="space-y-1">
+                <CardTitle className="appointment-title">{apt.procedures?.name || 'Procedimiento no especificado'}</CardTitle>
+                {isAdmin && (
+                  <div className="user-info">
+                    <div className="flex items-center">
+                      <User className="mr-1 h-3 w-3" />
+                      <span className="user-name">Usuario:</span>
                     </div>
-                  )}
-                </div>
-                {getStatusBadge(apt.status)}
+                    <div className="ml-4">
+                      <div className="user-name">{apt.profiles?.full_name || 'Nombre no disponible'}</div>
+                      <div className="user-email">{apt.profiles?.email || 'Email no disponible'}</div>
+                      {!apt.profiles && (
+                        <div className="text-xs text-yellow-600 mt-1">
+                          Nota: El perfil de este usuario puede estar incompleto
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+              {getStatusBadge(apt.status)}
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center text-sm">
-                <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                {format(new Date(apt.appointment_date), "PPPP", { locale: es })}
+            <CardContent className="appointment-content">
+              <div className="appointment-detail">
+                <Calendar className="detail-icon h-4 w-4" />
+                <span className="detail-text">{format(new Date(apt.appointment_date), "PPPP", { locale: es })}</span>
               </div>
-              <div className="flex items-center text-sm">
-                <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                {format(new Date(apt.appointment_date), "p", { locale: es })}
+              <div className="appointment-detail">
+                <Clock className="detail-icon h-4 w-4" />
+                <span className="detail-text">{format(new Date(apt.appointment_date), "p", { locale: es })}</span>
               </div>
               {apt.notes && (
-                <div className="flex items-start text-sm">
-                  <FileText className="mr-2 h-4 w-4 text-muted-foreground mt-0.5" />
-                  <span className="text-muted-foreground">{apt.notes}</span>
+                <div className="appointment-detail">
+                  <FileText className="detail-icon h-4 w-4 mt-0.5" />
+                  <span className="detail-text notes-section">{apt.notes}</span>
                 </div>
               )}
               
               {isAdmin && (
-                <div className="flex gap-2 pt-2">
+                <div className="action-buttons">
                   {apt.status === "pending" && (
                     <>
                       <Button
                         size="sm"
                         onClick={() => updateStatus(apt.id, "confirmed")}
                         variant="default"
+                        className="action-button confirm-button"
                       >
                         Confirmar
                       </Button>
@@ -317,6 +320,7 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
                         size="sm"
                         onClick={() => updateStatus(apt.id, "cancelled")}
                         variant="destructive"
+                        className="action-button cancel-button"
                       >
                         Cancelar
                       </Button>
@@ -327,6 +331,7 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
                       size="sm"
                       onClick={() => updateStatus(apt.id, "completed")}
                       variant="outline"
+                      className="action-button complete-button"
                     >
                       Marcar como Atendida
                     </Button>
