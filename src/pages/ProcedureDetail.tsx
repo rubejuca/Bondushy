@@ -51,7 +51,7 @@ const ProcedureDetail = () => {
         setCurrentImageIndex(prevIndex => 
           prevIndex === procedureImages.length - 1 ? 0 : prevIndex + 1
         );
-      }, 8000); // 5 segundos
+      }, 6000); // 5 segundos
       
       // Limpiar el intervalo cuando el efecto se limpie
       return () => {
