@@ -114,6 +114,32 @@ export const AppointmentCalendar = ({ isAdmin = false }: AppointmentCalendarProp
 
       if (error) throw error;
 
+      // Enviar correo de confirmación usando fetch directo
+      const response = await fetch("https://bnankphxrceakdazrhbs.functions.supabase.co/resend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuYW5rcGh4cmNlYWtkYXpyaGJzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTU3NzMzMiwiZXhwIjoyMDc3MTUzMzMyfQ.zbd0-VbI0lWH3LJQLy5AVSLfvvk67ORR6SmY6Vp7-SE", 
+        },
+        body: JSON.stringify({
+          to: user.email,
+          subject: "Confirmación de cita - Bondushy Spa",
+          html: `
+            <h2>¡Tu cita fue agendada con éxito!</h2>
+            <p>Gracias por elegir Bondushy Spa 💅</p>
+            <p>Nos vemos pronto.</p>
+          `,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error enviando correo:", errorData);
+      } else {
+        const data = await response.json();
+        console.log("Correo enviado:", data);
+      }
+
       toast.success("¡Cita agendada exitosamente!");
       setSelectedTime("");
       setSelectedProcedure("");
