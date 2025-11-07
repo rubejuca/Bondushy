@@ -11,10 +11,15 @@ import { ChatAssistant } from "@/components/chat/ChatAssistant";
 import { StatisticsDashboard } from "@/components/dashboard/StatisticsDashboard";
 import "./admin-dashboard.css";
 
+// Importar las interfaces
+import type { Appointment } from "@/components/appointments/AppointmentsList";
+import type { RescheduleAppointment } from "@/components/appointments/AppointmentCalendar";
+
 export const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"calendar" | "list" | "chat" | "stats">("stats");
   const [stats, setStats] = useState({ total: 0, pending: 0, confirmed: 0 });
+  const [rescheduleData, setRescheduleData] = useState<RescheduleAppointment | null>(null); // Estado para datos de reprogramación
 
   useEffect(() => {
     fetchStats();
@@ -48,6 +53,26 @@ export const AdminDashboard = () => {
     await supabase.auth.signOut();
     toast.success("Sesión cerrada");
     navigate("/auth");
+  };
+
+  // Función para manejar la reprogramación
+  const handleReschedule = (appointment: Appointment) => {
+    // Convertir el objeto Appointment al formato RescheduleAppointment
+    const rescheduleAppointment: RescheduleAppointment = {
+      id: appointment.id,
+      appointment_date: appointment.appointment_date,
+      procedures: appointment.procedures,
+      notes: appointment.notes
+    };
+    setRescheduleData(rescheduleAppointment);
+    setActiveTab("calendar");
+  };
+
+  // Función para completar la reprogramación
+  const handleRescheduleComplete = () => {
+    setRescheduleData(null);
+    setActiveTab("list");
+    fetchStats();
   };
 
   return (
@@ -127,8 +152,20 @@ export const AdminDashboard = () => {
 
         <div className="content-section">
           {activeTab === "stats" && <StatisticsDashboard />}
-          {activeTab === "calendar" && <AppointmentCalendar isAdmin />}
-          {activeTab === "list" && <AppointmentsList isAdmin onUpdate={fetchStats} />}
+          {activeTab === "calendar" && (
+            <AppointmentCalendar 
+              isAdmin 
+              rescheduleData={rescheduleData || undefined}
+              onRescheduleComplete={handleRescheduleComplete}
+            />
+          )}
+          {activeTab === "list" && (
+            <AppointmentsList 
+              isAdmin 
+              onUpdate={fetchStats} 
+              onReschedule={handleReschedule}
+            />
+          )}
           {activeTab === "chat" && <ChatAssistant />}
         </div>
       </main>

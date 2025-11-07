@@ -8,14 +8,38 @@ import { AppointmentCalendar } from "@/components/appointments/AppointmentCalend
 import { AppointmentsList } from "@/components/appointments/AppointmentsList";
 import { ChatAssistant } from "@/components/chat/ChatAssistant";
 
+// Importar las interfaces
+import type { Appointment } from "@/components/appointments/AppointmentsList";
+import type { RescheduleAppointment } from "@/components/appointments/AppointmentCalendar";
+
 export const PatientDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"calendar" | "list" | "chat">("calendar");
+  const [rescheduleData, setRescheduleData] = useState<RescheduleAppointment | null>(null); // Estado para datos de reprogramación
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Sesión cerrada");
     navigate("/auth");
+  };
+
+  // Función para manejar la reprogramación
+  const handleReschedule = (appointment: Appointment) => {
+    // Convertir el objeto Appointment al formato RescheduleAppointment
+    const rescheduleAppointment: RescheduleAppointment = {
+      id: appointment.id,
+      appointment_date: appointment.appointment_date,
+      procedures: appointment.procedures,
+      notes: appointment.notes
+    };
+    setRescheduleData(rescheduleAppointment);
+    setActiveTab("calendar");
+  };
+
+  // Función para completar la reprogramación
+  const handleRescheduleComplete = () => {
+    setRescheduleData(null);
+    setActiveTab("list");
   };
 
   return (
@@ -60,8 +84,17 @@ export const PatientDashboard = () => {
           </div>
         </div>
 
-        {activeTab === "calendar" && <AppointmentCalendar />}
-        {activeTab === "list" && <AppointmentsList />}
+        {activeTab === "calendar" && (
+          <AppointmentCalendar 
+            rescheduleData={rescheduleData || undefined}
+            onRescheduleComplete={handleRescheduleComplete}
+          />
+        )}
+        {activeTab === "list" && (
+          <AppointmentsList 
+            onReschedule={handleReschedule}
+          />
+        )}
         {activeTab === "chat" && <ChatAssistant />}
       </main>
     </div>

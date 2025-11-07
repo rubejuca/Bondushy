@@ -20,7 +20,7 @@ interface Profile {
   email: string;
 }
 
-interface Appointment {
+export interface Appointment { // Exportar la interfaz
   id: string;
   appointment_date: string;
   status: string;
@@ -32,6 +32,7 @@ interface Appointment {
 interface AppointmentsListProps {
   isAdmin?: boolean;
   onUpdate?: () => void;
+  onReschedule?: (appointment: Appointment) => void; // Agregar prop para reprogramar
 }
 
 const statusOptions = [
@@ -44,7 +45,7 @@ const statusOptions = [
 
 type StatusFilter = typeof statusOptions[number]["value"];
 
-export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsListProps) => {
+export const AppointmentsList = ({ isAdmin = false, onUpdate, onReschedule }: AppointmentsListProps) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<StatusFilter>("all");
@@ -148,6 +149,67 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
       toast.error("Error al cargar citas");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Función para cancelar una cita
+  const cancelAppointment = async (id: string) => {
+    try {
+      // Primero obtenemos la cita actual para tener la información del usuario
+      const { data: appointmentData, error: fetchError } = await supabase
+        .from("appointments")
+        .select(`
+          patient_id,
+          status,
+          procedures(name)
+        `)
+        .eq("id", id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Actualizamos el estado de la cita a cancelada
+      const { error: updateError } = await supabase
+        .from("appointments")
+        .update({ status: "cancelled" })
+        .eq("id", id);
+
+      if (updateError) throw updateError;
+
+      // Enviamos notificación al usuario que hizo la cita sobre el cambio de estado
+      const channel = supabase.channel('appointment-notification');
+      channel.send({
+        type: 'broadcast',
+        event: 'appointment_status_changed',
+        payload: {
+          appointmentId: id,
+          patientId: appointmentData.patient_id,
+          procedureName: appointmentData.procedures?.name || 'Procedimiento',
+          newStatus: "cancelled"
+        }
+      });
+      
+      // Enviamos notificación para refrescar las citas en todos los clientes
+      const refreshChannel = supabase.channel('appointments-refetch');
+      refreshChannel.send({
+        type: 'broadcast',
+        event: 'refresh_appointments',
+        payload: {}
+      });
+
+      toast.success("Cita cancelada");
+      fetchAppointments();
+      onUpdate?.();
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      toast.error("Error al cancelar la cita");
+    }
+  };
+
+  // Función para reprogramar una cita (redirige al calendario)
+  const handleReschedule = (appointment: Appointment) => {
+    if (onReschedule) {
+      onReschedule(appointment);
     }
   };
 
@@ -304,6 +366,29 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
                 </div>
               )}
               
+              {/* Botones de acción para pacientes */}
+              {!isAdmin && apt.status === "pending" && (
+                <div className="action-buttons mt-4">
+                  <Button
+                    size="sm"
+                    onClick={() => handleReschedule(apt)}
+                    variant="default"
+                    className="action-button reschedule-button"
+                  >
+                    Reprogramar
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => cancelAppointment(apt.id)}
+                    variant="destructive"
+                    className="action-button cancel-button"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              )}
+
+              {/* Botones de acción para administradores */}
               {isAdmin && (
                 <div className="action-buttons">
                   {apt.status === "pending" && (
@@ -318,7 +403,15 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => updateStatus(apt.id, "cancelled")}
+                        onClick={() => handleReschedule(apt)}
+                        variant="outline"
+                        className="action-button reschedule-button"
+                      >
+                        Reprogramar
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => cancelAppointment(apt.id)}
                         variant="destructive"
                         className="action-button cancel-button"
                       >
@@ -327,14 +420,32 @@ export const AppointmentsList = ({ isAdmin = false, onUpdate }: AppointmentsList
                     </>
                   )}
                   {apt.status === "confirmed" && (
-                    <Button
-                      size="sm"
-                      onClick={() => updateStatus(apt.id, "completed")}
-                      variant="outline"
-                      className="action-button complete-button"
-                    >
-                      Marcar como Atendida
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => updateStatus(apt.id, "completed")}
+                        variant="outline"
+                        className="action-button complete-button"
+                      >
+                        Marcar como Atendida
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleReschedule(apt)}
+                        variant="outline"
+                        className="action-button reschedule-button"
+                      >
+                        Reprogramar
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => cancelAppointment(apt.id)}
+                        variant="destructive"
+                        className="action-button cancel-button"
+                      >
+                        Cancelar
+                      </Button>
+                    </>
                   )}
                 </div>
               )}
